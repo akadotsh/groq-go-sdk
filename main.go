@@ -30,6 +30,45 @@ type Groq struct {
 	Model  GroqModel
 }
 
+type Messages struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+type Body struct {
+	Messages []Messages `json:"messages"`
+	Model    GroqModel  `json:"model"`
+}
+
+type Choices struct {
+	Index         int      `json:"index"`
+	Message       Messages `json:"message"`
+	Logprobs      any      `json:"logprobs"`
+	Finish_Reason string   `json:"finish_reason"`
+}
+
+type Usage struct {
+	Prompt_Tokens     float64 `json:"prompt_tokens"`
+	Prompt_Time       float64 `json:"prompt_time"`
+	Completion_Tokens int64   `json:"completion_tokens"`
+	Completion_Time   float64 `json:"completion_time"`
+	Total_Tokens      int64   `json:"total_tokens"`
+	Total_Time        float64 `json:"total_time"`
+}
+
+type XGroq struct {
+	ID string `json:"id"`
+}
+
+type Response struct {
+	ID                 string    `json:"id"`
+	Object             string    `json:"object"`
+	Created            int       `json:"created"`
+	Choices            []Choices `json:"choices"`
+	Usage              Usage     `json:"usage"`
+	System_Fingerprint string    `json:"system_fingerprint"`
+}
+
 func (groqInstance *Groq) Values() []GroqModel {
 	return []GroqModel{
 		Gemma2_9b_it,
@@ -44,16 +83,23 @@ func (groqInstance *Groq) Values() []GroqModel {
 	}
 }
 
-func (groqInstance *Groq) Chat() {
+func (groqInstance *Groq) Chat(message string) Response {
 	url := "https://api.groq.com/openai/v1/chat/completions"
 
-	body := []byte(`{
-    "messages":[{
-          "role": "user",
-          "content": "Explain the importance of fast language models"
-        }],
-      "model":"mixtral-8x7b-32768"  
-    }`)
+	constructBody := Body{
+		Messages: []Messages{{
+			Role:    "user",
+			Content: message,
+		},
+		},
+		Model: groqInstance.Model,
+	}
+
+	body, err := json.Marshal(constructBody)
+
+	if err != nil {
+		panic(err)
+	}
 
 	client := &http.Client{}
 
@@ -74,7 +120,7 @@ func (groqInstance *Groq) Chat() {
 
 	defer req.Body.Close()
 
-	var resp map[string]interface{}
+	var resp Response
 	derr := json.NewDecoder(res.Body).Decode(&resp)
 
 	if derr != nil {
@@ -82,6 +128,8 @@ func (groqInstance *Groq) Chat() {
 	}
 
 	fmt.Println("resp", resp)
+
+	return resp
 }
 
 func main() {
@@ -98,6 +146,6 @@ func main() {
 		Model:  Mixtral_8x7b_32768,
 	}
 
-	groq.Chat()
+	groq.Chat("Explain the importance of fast language models")
 
 }
