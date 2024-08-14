@@ -1,1 +1,1 @@
-Groq Go SDK
+# Groq Go SDK
