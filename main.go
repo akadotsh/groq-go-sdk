@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -75,13 +74,6 @@ func (groqInstance *Groq) Chat() {
 
 	defer req.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		fmt.Printf("Non-OK HTTP status: %d\n", res.StatusCode)
-		body, _ := ioutil.ReadAll(res.Body)
-		fmt.Println("Response body:", string(body))
-		return
-	}
-
 	var resp map[string]interface{}
 	derr := json.NewDecoder(res.Body).Decode(&resp)
 
@@ -93,7 +85,6 @@ func (groqInstance *Groq) Chat() {
 }
 
 func main() {
-	fmt.Println("init")
 
 	err := godotenv.Load()
 	if err != nil {
@@ -102,11 +93,11 @@ func main() {
 
 	groq_api_key := os.Getenv("groq_api_key")
 
-	groqInit := Groq{
+	groq := Groq{
 		ApiKey: groq_api_key,
 		Model:  Mixtral_8x7b_32768,
 	}
 
-	groqInit.Chat()
+	groq.Chat()
 
 }
