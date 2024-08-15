@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
 	groq "github.com/akadotsh/groq-go/pkg"
+	"github.com/akadotsh/groq-go/pkg/types"
 	"github.com/joho/godotenv"
 )
 
@@ -19,9 +21,15 @@ func main() {
 
 	groq := groq.Groq{
 		ApiKey: groq_api_key,
-		Model:  groq.Mixtral_8x7b_32768,
+		Model:  types.Mixtral_8x7b_32768,
 	}
 
-	groq.Chat("Explain the anatomy of human life")
+	response,err:= groq.Chat("Explain the anatomy of human life")
+
+	if err != nil{
+		fmt.Println("Error",err)
+	}
+
+	fmt.Println(response)
 
 }
