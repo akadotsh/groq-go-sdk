@@ -1,14 +1,11 @@
-package main
+package pkg
 
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type GroqModel string
@@ -36,8 +33,11 @@ type Messages struct {
 }
 
 type Body struct {
-	Messages []Messages `json:"messages"`
-	Model    GroqModel  `json:"model"`
+	Messages    []Messages `json:"messages"`
+	Model       GroqModel  `json:"model"`
+	Temperature float64    `json:"temperature"`
+	Max_Tokens  float64    `json:"max_tokens"`
+	Stream      bool       `json:"stream"`
 }
 
 type Choices struct {
@@ -83,8 +83,12 @@ func (groqInstance *Groq) Values() []GroqModel {
 	}
 }
 
-func (groqInstance *Groq) Chat(message string) Response {
+func (g *Groq) Chat(message string) (*Response, error) {
 	url := "https://api.groq.com/openai/v1/chat/completions"
+
+	if g.ApiKey == "" {
+		return nil, errors.New("API key not found")
+	}
 
 	constructBody := Body{
 		Messages: []Messages{{
@@ -92,60 +96,48 @@ func (groqInstance *Groq) Chat(message string) Response {
 			Content: message,
 		},
 		},
-		Model: groqInstance.Model,
+		Model:       g.Model,
+		Temperature: 0.5,
+		Stream:      false,
+		Max_Tokens:  1024,
 	}
 
 	body, err := json.Marshal(constructBody)
 
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("failed to marshal request body: %w", err)
 	}
 
-	client := &http.Client{}
+	httpClient := &http.Client{}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer "+groqInstance.ApiKey)
+	req.Header.Add("Authorization", "Bearer "+g.ApiKey)
 
 	if err != nil {
 		fmt.Println("Error", err)
-		log.Panic(err)
+		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
-	res, err := client.Do(req)
+	res, err := httpClient.Do(req)
 
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
 
 	defer req.Body.Close()
 
-	var resp Response
-	derr := json.NewDecoder(res.Body).Decode(&resp)
-
-	if derr != nil {
-		panic(derr)
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 
-	fmt.Println("resp", resp)
+	var response Response
 
-	return resp
-}
-
-func main() {
-
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}
 
-	groq_api_key := os.Getenv("groq_api_key")
+	fmt.Println("resp", response)
 
-	groq := Groq{
-		ApiKey: groq_api_key,
-		Model:  Mixtral_8x7b_32768,
-	}
-
-	groq.Chat("Explain the importance of fast language models")
-
+	return &response, err
 }
