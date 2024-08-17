@@ -24,7 +24,7 @@ func main() {
 		Model:  types.Mixtral_8x7b_32768,
 	}
 
-	response,err:= groq.Chat("Explain the anatomy of human life")
+	response,err:= groq.Chat("Explain the importance of fast language models")
 
 	if err != nil{
 		fmt.Println("Error",err)
