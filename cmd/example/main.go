@@ -6,7 +6,6 @@ import (
 	"os"
 
 	groq "github.com/akadotsh/groq-go/pkg"
-	"github.com/akadotsh/groq-go/pkg/types"
 	"github.com/joho/godotenv"
 )
 
@@ -21,7 +20,7 @@ func main() {
 
 	groq := groq.Groq{
 		ApiKey: groq_api_key,
-		Model:  types.Mixtral_8x7b_32768,
+		Model:  groq.Mixtral_8x7b_32768,
 	}
 
 	response,err:= groq.Chat("Explain the importance of fast language models")

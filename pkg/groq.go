@@ -6,40 +6,41 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+)
 
-	"github.com/akadotsh/groq-go/pkg/types"
+const (
+	apiURL = "https://api.groq.com/openai/v1/chat/completions"
+	role   = "user"
 )
 
 type Groq struct {
 	ApiKey string
-	Model  types.GroqModel
+	Model  GroqModel
 }
 
-func (groqInstance *Groq) Values() []types.GroqModel {
-	return []types.GroqModel{
-		types.Gemma2_9b_it,
-		types.Gemma_7b_it,
-		types.Llama_31_70b_versatile,
-		types.Llama_31_8b_instant,
-		types.Llama3_70b_8192,
-		types.Llama3_8b_8192,
-		types.Llama_guard_3_8b,
-		types.Mixtral_8x7b_32768,
-		types.Whisper_large_v3,
+func (groqInstance *Groq) GetModels() []GroqModel {
+	return []GroqModel{
+		Gemma2_9b_it,
+		Gemma_7b_it,
+		Llama_31_70b_versatile,
+		Llama_31_8b_instant,
+		Llama3_70b_8192,
+		Llama3_8b_8192,
+		Llama_guard_3_8b,
+		Mixtral_8x7b_32768,
+		Whisper_large_v3,
 	}
 }
 
-
-func (g *Groq) Chat(message string) (*types.Response, error) {
-	url := "https://api.groq.com/openai/v1/chat/completions"
+func (g *Groq) Chat(message string) (*Response, error) {
 
 	if g.ApiKey == "" {
 		return nil, errors.New("API key not found")
 	}
 
-	constructBody := types.Body{
-		Messages: []types.Messages{{
-			Role:    "user",
+	constructBody := Body{
+		Messages: []Messages{{
+			Role:    role,
 			Content: message,
 		},
 		},
@@ -57,7 +58,7 @@ func (g *Groq) Chat(message string) (*types.Response, error) {
 
 	httpClient := &http.Client{}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(body))
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", "Bearer "+g.ApiKey)
 
@@ -78,7 +79,7 @@ func (g *Groq) Chat(message string) (*types.Response, error) {
 		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 
-	var response types.Response
+	var response Response
 
 	if err := json.NewDecoder(res.Body).Decode(&response); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)
