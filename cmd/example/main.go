@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	groq "github.com/akadotsh/groq-go/pkg"
+	groq "github.com/akadotsh/groq-go-sdk/pkg"
 	"github.com/joho/godotenv"
 )
 
