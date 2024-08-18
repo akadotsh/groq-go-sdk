@@ -10,7 +10,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/akadotsh/groq-go-sdk" // Replace with your actual import path
+	"github.com/akadotsh/groq-go-sdk"
 	"github.com/joho/godotenv"
 )
 
