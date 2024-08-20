@@ -1,23 +1,31 @@
-package pkg
+package groq
 
-type Messages struct {
-	Role    string `json:"role"`
+
+type Role string
+
+const (
+	User Role = "user"
+	Assistant Role = "assistant"
+)
+
+type Message struct {
+	Role    Role `json:"role"`
 	Content string `json:"content"`
 }
 
 type Body struct {
-	Messages    []Messages `json:"messages"`
-	Model       GroqModel  `json:"model"`
-	Temperature float64    `json:"temperature"`
-	Max_Tokens  float64    `json:"max_tokens"`
-	Stream      bool       `json:"stream"`
+	Messages    []Message `json:"messages"`
+	Model       GroqModel `json:"model"`
+	Temperature float64   `json:"temperature"`
+	Max_Tokens  float64   `json:"max_tokens"`
+	Stream      bool      `json:"stream"`
 }
 
 type Choices struct {
-	Index         int      `json:"index"`
-	Message       Messages `json:"message"`
-	Logprobs      any      `json:"logprobs"`
-	Finish_Reason string   `json:"finish_reason"`
+	Index         int     `json:"index"`
+	Message       Message `json:"message"`
+	Logprobs      any     `json:"logprobs"`
+	Finish_Reason string  `json:"finish_reason"`
 }
 
 type Usage struct {

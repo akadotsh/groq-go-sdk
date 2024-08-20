@@ -1,4 +1,4 @@
-package pkg
+package groq
 
 import (
 	"reflect"
@@ -11,7 +11,12 @@ func TestChat(t *testing.T) {
 		Model:  Gemma2_9b_it,
 	}
 
-	_, err := groq.Chat("Explain the importance of fast language models")
+	_, err := groq.Chat([]Message{
+		{
+			Role:   User,
+			Content: "Explain the importance of fast language models",
+		},
+	})
 
 	if err == nil {
 		t.Error("Expected an error, but got nil")

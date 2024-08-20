@@ -40,7 +40,12 @@ func main() {
 	}
 
 	// Send a chat request
-	response, err := groq.Chat("Explain the importance of fast language models")
+	response, err := groq.Chat([]Message{
+		{
+            Role:   groq.User,
+            Content: "Explain the importance of fast language models",
+        },
+	})
 	if err != nil {
 		fmt.Println("Error:", err)
 		return

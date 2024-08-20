@@ -1,4 +1,4 @@
-package pkg
+package groq
 
 type GroqModel string
 

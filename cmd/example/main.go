@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	groq "github.com/akadotsh/groq-go-sdk/pkg"
+	groqsdk "github.com/akadotsh/groq-go-sdk"
 	"github.com/joho/godotenv"
 )
 
@@ -18,12 +18,17 @@ func main() {
 
 	groq_api_key := os.Getenv("groq_api_key")
 
-	groq := groq.Groq{
+	groq := groqsdk.Groq{
 		ApiKey: groq_api_key,
-		Model:  groq.Mixtral_8x7b_32768,
+		Model:  groqsdk.Mixtral_8x7b_32768,
 	}
 
-	response,err:= groq.Chat("Explain the importance of fast language models")
+	response, err := groq.Chat([]groqsdk.Message{
+        {
+            Role:    groqsdk.User,
+            Content: "Explain the importance of fast language models",
+        },
+    })
 
 	if err != nil{
 		fmt.Println("Error",err)

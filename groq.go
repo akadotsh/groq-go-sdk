@@ -1,4 +1,4 @@
-package pkg
+package groq
 
 import (
 	"bytes"
@@ -10,7 +10,6 @@ import (
 
 const (
 	apiURL = "https://api.groq.com/openai/v1/chat/completions"
-	role   = "user"
 )
 
 type Groq struct {
@@ -32,18 +31,14 @@ func (groqInstance *Groq) GetModels() []GroqModel {
 	}
 }
 
-func (g *Groq) Chat(message string) (*Response, error) {
+func (g *Groq) Chat(messages []Message) (*Response, error) {
 
 	if g.ApiKey == "" {
 		return nil, errors.New("API key not found")
 	}
 
 	constructBody := Body{
-		Messages: []Messages{{
-			Role:    role,
-			Content: message,
-		},
-		},
+		Messages:    messages,
 		Model:       g.Model,
 		Temperature: 0.5,
 		Stream:      false,
@@ -57,7 +52,6 @@ func (g *Groq) Chat(message string) (*Response, error) {
 	}
 
 	httpClient := &http.Client{}
-
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(body))
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", "Bearer "+g.ApiKey)
