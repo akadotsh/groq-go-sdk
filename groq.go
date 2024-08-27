@@ -13,8 +13,13 @@ const (
 )
 
 type Groq struct {
-	ApiKey string
-	Model  GroqModel
+	apiKey string
+}
+
+func New(apiKey string) *Groq {
+	return &Groq{
+		apiKey: apiKey,
+	}
 }
 
 func (groqInstance *Groq) GetModels() []GroqModel {
@@ -31,15 +36,18 @@ func (groqInstance *Groq) GetModels() []GroqModel {
 	}
 }
 
-func (g *Groq) Chat(messages []Message) (*Response, error) {
+func (g *Groq) Chat(chat Chat) (*Response, error) {
 
-	if g.ApiKey == "" {
+	if g.apiKey == "" {
 		return nil, errors.New("API key not found")
 	}
 
+	message := chat.Messages
+	model := chat.Model
+
 	constructBody := Body{
-		Messages:    messages,
-		Model:       g.Model,
+		Messages:    message,
+		Model:       model,
 		Temperature: 0.5,
 		Stream:      false,
 		Max_Tokens:  1024,
@@ -54,7 +62,7 @@ func (g *Groq) Chat(messages []Message) (*Response, error) {
 	httpClient := &http.Client{}
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(body))
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Bearer "+g.ApiKey)
+	req.Header.Add("Authorization", "Bearer "+g.apiKey)
 
 	if err != nil {
 		fmt.Println("Error", err)

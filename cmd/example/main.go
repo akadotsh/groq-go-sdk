@@ -18,22 +18,23 @@ func main() {
 
 	groq_api_key := os.Getenv("groq_api_key")
 
-	groq := groqsdk.Groq{
-		ApiKey: groq_api_key,
-		Model:  groqsdk.Mixtral_8x7b_32768,
+	groq := groqsdk.New(groq_api_key)
+
+	response, err := groq.Chat(groqsdk.Chat{
+		Messages: []groqsdk.Message{
+			{
+				Role:    groqsdk.User,
+				Content: "Explain the importance of fast language models",
+			},
+		},
+		Model: groqsdk.Gemma2_9b_it,
+	})
+
+	if err != nil {
+		log.Fatalf("Error calling Chat: %v", err)
 	}
 
-	response, err := groq.Chat([]groqsdk.Message{
-        {
-            Role:    groqsdk.User,
-            Content: "Explain the importance of fast language models",
-        },
-    })
-
-	if err != nil{
-		fmt.Println("Error",err)
-	}
-
-	fmt.Println(response)
+	
+	fmt.Println(response.Choices[0].Message)
 
 }

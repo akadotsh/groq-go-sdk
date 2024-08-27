@@ -1,15 +1,19 @@
 package groq
 
-
 type Role string
 
 const (
-	User Role = "user"
+	User      Role = "user"
 	Assistant Role = "assistant"
 )
 
+type Chat struct {
+	Messages []Message `json:"messages"`
+	Model    GroqModel `json:"model"`
+}
+
 type Message struct {
-	Role    Role `json:"role"`
+	Role    Role   `json:"role"`
 	Content string `json:"content"`
 }
 

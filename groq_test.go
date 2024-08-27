@@ -5,17 +5,17 @@ import (
 	"testing"
 )
 
-func TestChat(t *testing.T) {
-	groq := Groq{
-		ApiKey: "",
-		Model:  Gemma2_9b_it,
-	}
+func TestNoAPIKey(t *testing.T) {
+	groq := New("")
 
-	_, err := groq.Chat([]Message{
-		{
-			Role:   User,
-			Content: "Explain the importance of fast language models",
+	_, err := groq.Chat(Chat{
+		Messages: []Message{
+			{
+				Role:    User,
+				Content: "Explain the importance of fast language models",
+			},
 		},
+		Model: Mixtral_8x7b_32768,
 	})
 
 	if err == nil {
@@ -27,14 +27,10 @@ func TestChat(t *testing.T) {
 	if err.Error() != expectedErrorMsg {
 		t.Errorf("Expected error message '%s', but got '%s'", expectedErrorMsg, err.Error())
 	}
-
 }
 
 func TestGetAllModelValues(t *testing.T) {
-	groq := Groq{
-		ApiKey: "",
-		Model:  Gemma2_9b_it,
-	}
+	groq := New("dummy-api-key")
 
 	models := groq.GetModels()
 
@@ -51,6 +47,6 @@ func TestGetAllModelValues(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(expectedValue, models) {
-		t.Errorf("Expected error message '%s', but got '%s'", expectedValue, models)
+		t.Errorf("Expected models %v, but got %v", expectedValue, models)
 	}
 }
