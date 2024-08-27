@@ -31,27 +31,35 @@ func main() {
 	}
 
 	// Get the API key from environment variables
-	groqAPIKey := os.Getenv("groq_api_key")
+	groqAPIKey := os.Getenv("GROQ_API_KEY")
+	if groqAPIKey == "" {
+		log.Fatal("GROQ_API_KEY not set in environment variables")
+	}
 
 	// Initialize the Groq client
-	groq := groq.Groq{
-		ApiKey: groqAPIKey,
-		Model:  groq.Mixtral_8x7b_32768,
+	client := groq.New(groqAPIKey)
+	if client == nil {
+		log.Fatal("Failed to create Groq client")
+	}
+
+	// Prepare the chat request
+	chat := groq.Chat{
+		Messages: []groq.Message{
+			{
+				Role:    groq.User,
+				Content: "Explain the importance of fast language models",
+			},
+		},
+		Model: groq.Mixtral_8x7b_32768,
 	}
 
 	// Send a chat request
-	response, err := groq.Chat([]Message{
-		{
-            Role:   groq.User,
-            Content: "Explain the importance of fast language models",
-        },
-	})
+	response, err := client.Chat(chat)
 	if err != nil {
-		fmt.Println("Error:", err)
-		return
+		log.Fatalf("Error calling Chat: %v", err)
 	}
 
-
+	// Print the response
 	fmt.Println(response)
 }
 ```
