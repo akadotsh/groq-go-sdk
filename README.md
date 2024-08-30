@@ -1,5 +1,8 @@
 # Groq Go SDK
 
+### Go client library for interacting with the Groq API.
+
+
 ## Installation
 
 ```bash
