@@ -8,8 +8,11 @@ const (
 )
 
 type Chat struct {
-	Messages []Message `json:"messages"`
-	Model    GroqModel `json:"model"`
+	Messages    []Message `json:"messages"`
+	Model       GroqModel `json:"model"`
+	Temperature float64   `json:"temperature"`
+	Max_Tokens  float64   `json:"max_tokens"`
+	Stream      bool      `json:"stream"`
 }
 
 type Message struct {

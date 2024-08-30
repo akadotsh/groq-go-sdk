@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -44,13 +45,16 @@ func (g *Groq) Chat(chat Chat) (*Response, error) {
 
 	message := chat.Messages
 	model := chat.Model
+	temperature := chat.Temperature
+	max_tokens := chat.Max_Tokens
+	stream := chat.Stream
 
 	constructBody := Body{
 		Messages:    message,
 		Model:       model,
-		Temperature: 0.5,
-		Stream:      false,
-		Max_Tokens:  1024,
+		Temperature: temperature,
+		Stream:      stream,
+		Max_Tokens:  max_tokens,
 	}
 
 	body, err := json.Marshal(constructBody)
@@ -78,7 +82,13 @@ func (g *Groq) Chat(chat Chat) (*Response, error) {
 	defer req.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, fmt.Errorf("unexpected status code: %d, failed to read body: %v", res.StatusCode, err)
+		}
+		defer res.Body.Close()
+
+		return nil, fmt.Errorf("status code: %d, body: %s", res.StatusCode, string(body))
 	}
 
 	var response Response
