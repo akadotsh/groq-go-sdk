@@ -1,3 +1,5 @@
+> ### IMPORTANT: This is an unofficial, community-developed Groq client library for Go. It is not affiliated with, officially maintained, or endorsed by Groq Inc.
+
 # Groq Go SDK
 
 ### Go client library for interacting with the Groq API.
