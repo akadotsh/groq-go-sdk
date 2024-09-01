@@ -4,6 +4,10 @@
 
 ### Go client library for interacting with the Groq API.
 
+## Requirements
+- Go 1.22.4 or higher
+- [godotenv package](https://github.com/joho/godotenv) (optional, for loading environment variables from a `.env` file)
+
 
 ## Installation
 
@@ -68,3 +72,6 @@ func main() {
 	fmt.Println(response)
 }
 ```
+
+# License
+This project is licensed under the MIT License - [see the LICENSE file for details](https://github.com/akadotsh/groq-go-sdk?tab=MIT-1-ov-file)
