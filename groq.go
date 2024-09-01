@@ -45,16 +45,22 @@ func (g *Groq) Chat(chat Chat) (*Response, error) {
 
 	message := chat.Messages
 	model := chat.Model
-	temperature := chat.Temperature
-	max_tokens := chat.Max_Tokens
-	stream := chat.Stream
 
 	constructBody := Body{
-		Messages:    message,
-		Model:       model,
-		Temperature: temperature,
-		Stream:      stream,
-		Max_Tokens:  max_tokens,
+		Messages: message,
+		Model:    model,
+	}
+
+	if chat.Temperature != 0 {
+		constructBody.Temperature = chat.Temperature
+	}
+
+	if chat.Stream {
+		constructBody.Stream = chat.Stream
+	}
+
+	if chat.Max_Tokens != 0 {
+		constructBody.Max_Tokens = chat.Max_Tokens
 	}
 
 	body, err := json.Marshal(constructBody)

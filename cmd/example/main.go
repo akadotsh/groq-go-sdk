@@ -16,7 +16,7 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	groq_api_key := os.Getenv("groq_api_key")
+	groq_api_key := os.Getenv("GROQ_API_KEY")
 
 	groq := groqsdk.New(groq_api_key)
 

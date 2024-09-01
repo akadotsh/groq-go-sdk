@@ -23,9 +23,9 @@ type Message struct {
 type Body struct {
 	Messages    []Message `json:"messages"`
 	Model       GroqModel `json:"model"`
-	Temperature float64   `json:"temperature"`
-	Max_Tokens  float64   `json:"max_tokens"`
-	Stream      bool      `json:"stream"`
+	Temperature float64   `json:"temperature,omitempty"`
+	Max_Tokens  float64   `json:"max_tokens,omitempty"`
+	Stream      bool      `json:"stream,omitempty"`
 }
 
 type Choices struct {
